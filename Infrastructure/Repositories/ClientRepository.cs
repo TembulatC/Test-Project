@@ -41,51 +41,7 @@ namespace Infrastructure.Repositories
             return client;
         }
 
-
-        // Получение списка клиентов
-        public async Task<List<Client>> GetAllByName(bool sort)
-        {
-            switch(sort)
-            {
-                case true:
-                    return await _dbContext.Clients.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
-
-                case false:
-                    return await _dbContext.Clients.AsNoTracking().OrderByDescending(c => c.Name).ToListAsync();
-            }
-        }
-
-        public async Task<List<Client>> GetAllByCode(bool sort, int page, int pageSize)
-        {
-            switch (sort)
-            {
-                case true:
-                    return await _dbContext.Clients.AsNoTracking()
-                        .OrderBy(c => c.Code)
-                        .Take(pageSize)
-                        .ToListAsync();
-
-                case false:
-                    return await _dbContext.Clients.AsNoTracking()
-                        .OrderByDescending(c => c.Code)
-                        .Take(pageSize)
-                        .ToListAsync();
-            }
-        }
-
-        public async Task<List<Client>> GetAllByDiscount(bool sort)
-        {
-            switch (sort)
-            {
-                case true:
-                    return await _dbContext.Clients.AsNoTracking().OrderBy(c => c.Discount).ToListAsync();
-
-                case false:
-                    return await _dbContext.Clients.AsNoTracking().OrderByDescending(c => c.Discount).ToListAsync();
-            }
-        }
-
-        private IQueryable<Client> GetByOrder(string searchInput, string filter, string sort, IQueryable<Client> clients)
+        private IQueryable<Client> GetByOrder(string searchInput, string filter, string sort, int pageSize, IQueryable<Client> clients)
         {
             Expression<Func<Client, object>> sorting = filter?.ToLower() switch
             {
@@ -100,18 +56,18 @@ namespace Infrastructure.Repositories
             switch(sort)
             {
                 case "asc":
-                    clientsFilters = clientsFilters.OrderBy(sorting);
+                    clientsFilters = clientsFilters.OrderBy(sorting).Take(pageSize);
                     break;
 
                 case "desc":
-                    clientsFilters = clientsFilters.OrderByDescending(sorting);
+                    clientsFilters = clientsFilters.OrderByDescending(sorting).Take(pageSize);
                     break;
             }
 
             return clientsFilters;
         }
 
-        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort)
+        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort, int pageSize)
         {
             var clients = _dbContext.Clients.AsNoTracking();
 
@@ -126,11 +82,11 @@ namespace Infrastructure.Repositories
             switch (string.IsNullOrWhiteSpace(searchInput))
             {
                 case false:
-                    clients = GetByOrder(searchInput, filter, sort, clients.Where(filters));
+                    clients = GetByOrder(searchInput, filter, sort, pageSize, clients.Where(filters));
                     break;
 
                 case true:
-                    clients = clients.OrderByDescending(c => c.Code);
+                    clients = clients.OrderByDescending(c => c.Code).Take(pageSize);
                     break;
 
             }

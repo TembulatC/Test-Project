@@ -15,21 +15,21 @@
             <button type="button" id="editItemButton">Изменить</button>
         </div>
 
-        <div class="pagination">
-            <span>Показывать на странице:</span>
-            <button type="button" class="takeButton" value="25" @click="sortClientsByCodeDesc(25)">25</button>
-            <button type="button" class="takeButton" value="50" @click="sortClientsByCodeDesc(50)">50</button>
-            <button type="button" class="takeButton" value="100" @click="sortClientsByCodeDesc(100)">100</button>
-        </div>
-
         <div id="search">
             <form method="get" @submit.prevent>
+                <label for="showBy" class="label2">Показывать на странице:</label>
+                <select id="showBy">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+
                 <label for="filterBy">Поиск по:</label>
                 <select id="filterBy">
                     <option value="name">Имени</option>
                     <option value="code">Коду</option>
                     <option value="address">Адресу</option>
-                    <option class="byDiscount" value="discount">Скидке</option>
+                    <option value="discount">Скидке</option>
                 </select>
 
                 <label for="sortBy" class="label">Сортировка по:</label>
@@ -39,7 +39,7 @@
                 </select>
 
                 <input id="searchString" type="search" placeholder="Поиск по имени, коду, адресу или скидке" />
-                <button id="searchBtn" type="button" @click="filterClientsByFilter">Найти</button>
+                <button id="searchBtn" type="button" @click="GetClientsByFilter">Найти</button>
             </form>
         </div>
 
@@ -48,10 +48,10 @@
                 <thead>
                     <tr>
                         <th class="col5"><input type="checkbox" name="select" /></th>
-                        <th class="col1">Имя <button class="trBtn" type="button" @click="sortClientsByNameDesc">&#9660;</button><button class="trBtn" type="button" @click="sortClientsByNameAsc">&#9650;</button></th>
-                        <th class="col2">Код <button class="trBtn" type="button" @click="sortClientsByCodeDesc">&#9660;</button><button class="trBtn" type="button" @click="sortClientsByCodeAsc">&#9650;</button></th>
+                        <th class="col1">Имя</th>
+                        <th class="col2">Код</th>
                         <th class="col3">Адрес пункта выдачи</th>
-                        <th class="col4">Скидка <button class="trBtn" type="button" @click="sortClientsByDiscountDesc">&#9660;</button><button class="trBtn" type="button" @click="sortClientsByDiscountAsc">&#9650;</button></th>
+                        <th class="col4">Скидка</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -215,27 +215,8 @@
         width: 5%;
     }
 
-    .trBtn {
-        border: none;
-        height: 20px;
-        width: 15px;
-        font-size: 10px;
-        background-color: rgb(38, 123, 120);
-        color: white;
-        transition: all 0.5s;
-        border-radius: 5px;
-    }
-
-        .trBtn:hover {
-            background-color: rgb(83, 189, 166);
-        }
-
-        .trBtn:focus {
-            background-color: rgb(83, 189, 166);
-        }
-
     #search {
-        width: 400px;
+        width: 700px;
         position: absolute;
         top: 167px;
         right: 145px;
@@ -336,46 +317,36 @@
             transition: all 0.5s;
         }
 
-    select-container {
-        position: relative;
-        overflow: hidden; /* Скрываем стандартную стрелку браузера */
-    }
-
-    .pagination {
-        min-width: 300px;
+    #showBy {
+        text-align: center;
         position: absolute;
-        left: 100px;
-        top: 199px;
-    }
-
-    .pagination span {
-        left: 0px;
-        opacity: 1;
-        color: black;
-        position: relative;
-        font-weight: normal;
-    }
-
-    .pagination button {
-        border: none;
-        outline: none;
+        top: 41px;
+        right: 416px;
         height: 30px;
-        width: 37px;
-        color: white;
-        margin-left: 10px;
+        outline: none;
+        border: 1px solid rgb(38, 123, 120);
         border-radius: 5px;
-        font-weight: bold;
-        background-color: rgb(38, 123, 120);
     }
 
-        .pagination button:hover {
-            background-color: rgb(83, 189, 166);
+        #showBy:hover {
+            border-color: rgb(83, 189, 166);
             transition: all 0.5s;
         }
 
-        .pagination button:focus {
-            background-color: rgb(83, 189, 166);
+        #showBy:focus {
+            border-color: rgb(83, 189, 166);
+            transition: all 0.5s;
         }
+
+    .label2 {
+        right: 467px;
+        position: absolute;
+    }
+
+    select-container {
+        position: relative;
+        overflow: hidden;
+    }
 </style>
 
 <script>
@@ -389,7 +360,7 @@
                 clientModalVisible: false,
                 itemModalVisible: false,
                 orderModalVisible: false,
-                clientsSort: [axios.get("/AdminPage/GetAllByCode", { params: { sort: false, page: 0, pageSize: 25 } }).then(responses => (this.clientsSort = responses.data))]
+                clientsSort: [axios.get("/AdminPage/GetByFilter", { params: { searchInput: null, filter: "code" } }).then(responses => (this.clientsSort = responses.data))]
             }
         },
         name: 'Content',
@@ -411,32 +382,17 @@
                 this.orderModalVisible = true;
             },
 
-            sortClientsByNameDesc() {
-                axios.get("/AdminPage/GetAllByName", { params: { sort: false } }).then(responses => (this.clientsSort = responses.data));
-            },
-
-            sortClientsByNameAsc() {
-                axios.get("/AdminPage/GetAllByName", { params: { sort: true } }).then(responses => (this.clientsSort = responses.data));
-            },
-
-            sortClientsByCodeDesc(value) {
-                    axios.get("/AdminPage/GetAllByCode", { params: { sort: false, page: 0, pageSize: value } }).then(responses => (this.clientsSort = responses.data));               
-            },
-
-            sortClientsByCodeAsc() {
-                axios.get("/AdminPage/GetAllByCode", { params: { sort: true, page: 0, pageSize: value } }).then(responses => (this.clientsSort = responses.data));
-            },
-
-            sortClientsByDiscountDesc() {
-                axios.get("/AdminPage/GetAllByDiscount", { params: { sort: false } }).then(responses => (this.clientsSort = responses.data));
-            },
-
-            sortClientsByDiscountAsc() {
-                axios.get("/AdminPage/GetAllByDiscount", { params: { sort: true } }).then(responses => (this.clientsSort = responses.data));
-            },
-
-            filterClientsByFilter() {
-                axios.get("/AdminPage/GetByFilter", { params: { searchInput: $('#searchString').val(), filter: $('#filterBy').val(), searchDiscountInput: $('#searchString').val(), sort: $('#sortBy').val() } }).then(responses => (this.clientsSort = responses.data));
+            GetClientsByFilter() {
+                axios.get("/AdminPage/GetByFilter", {
+                    params:
+                    {
+                        searchInput: $('#searchString').val(),
+                        filter: $('#filterBy').val(),
+                        searchDiscountInput: $('#searchString').val(),
+                        sort: $('#sortBy').val(),
+                        pageSize: $('#showBy').val()
+                    }
+                }).then(responses => (this.clientsSort = responses.data));
             },
         }
     }

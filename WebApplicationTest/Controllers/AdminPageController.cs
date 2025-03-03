@@ -62,30 +62,9 @@ namespace WebApplicationTest.Controllers
 
         [HttpGet]
         [Route("[controller]/[action]")]
-        public async Task<IActionResult> GetAllByName([FromQuery] SortClientResponse response)
-        {
-            return Json(await _clientService.GetAllByName(response.sort));
-        }
-
-        [HttpGet]
-        [Route("[controller]/[action]")]
-        public async Task<IActionResult> GetAllByCode([FromQuery] SortClientResponse response)
-        {
-            return Json(await _clientService.GetAllByCode(response.sort, response.page, response.pageSize));
-        }
-
-        [HttpGet]
-        [Route("[controller]/[action]")]
-        public async Task<IActionResult> GetAllByDiscount([FromQuery] SortClientResponse response)
-        {
-            return Json(await _clientService.GetAllByDiscount(response.sort));
-        }
-
-        [HttpGet]
-        [Route("[controller]/[action]")]
         public async Task<IActionResult> GetByFilter([FromQuery] FilterResponse response)
         {
-            return Json(await _clientService.GetByFilter(response.searchInput, response.filter, response.searchDiscountInput, response.sort));
+            return Json(await _clientService.GetByFilter(response.searchInput, response.filter, response.searchDiscountInput, response.sort, response.pageSize));
         }
     }
 }

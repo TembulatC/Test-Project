@@ -11,9 +11,6 @@ namespace Domain.Repositories
     {
         Task AddClient(string login, string password, string code, string address);
         Task<Client> FindClientForAuth(string loginData);
-        Task<List<Client>> GetAllByName(bool sort);
-        Task<List<Client>> GetAllByCode(bool sort, int page, int pageSize);
-        Task<List<Client>> GetAllByDiscount(bool sort);
-        Task<List<Client>> GetByFilter(string searchInput, string filters, int searchDiscountInput, string sort);
+        Task<List<Client>> GetByFilter(string searchInput, string filters, int searchDiscountInput, string sort, int pageSize);
     }
 }

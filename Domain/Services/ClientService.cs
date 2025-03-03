@@ -29,9 +29,9 @@ namespace Domain.Services
         public async Task AddClient(string login, string password, string city, string street, string number)
         {
             // Создается код клиента
-            string year = DateTime.Now.ToString("yyyy");
             string time = DateTime.Now.ToString("MMddhhmmss");
-            string code = $"{time}-{year}";
+            string time2 = DateTime.Now.ToString("fffffff");
+            string code = $"{time}-{time2}";
 
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
@@ -44,7 +44,8 @@ namespace Domain.Services
             // Создается код клиента
             string year = DateTime.Now.ToString("yyyy");
             string time = DateTime.Now.ToString("MMddHHmmss");
-            string code = $"{time}-{year}";
+            string time2 = DateTime.Now.ToString("fffffff"); 
+            string code = $"{time}-{time2}-{year}";
 
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
@@ -87,24 +88,9 @@ namespace Domain.Services
 
         }
 
-        public async Task<List<Client>> GetAllByName(bool sort)
+        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort, int pageSize)
         {
-            return await _clientRepository.GetAllByName(sort);
-        }
-
-        public async Task<List<Client>> GetAllByCode(bool sort, int page, int pageSize)
-        {
-            return await _clientRepository.GetAllByCode(sort, page, pageSize);
-        }
-
-        public async Task<List<Client>> GetAllByDiscount(bool sort)
-        {
-            return await _clientRepository.GetAllByDiscount(sort);
-        }
-
-        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort)
-        {
-            return await _clientRepository.GetByFilter(searchInput, filter, searchDiscountInput, sort);
+            return await _clientRepository.GetByFilter(searchInput, filter, searchDiscountInput, sort, pageSize);
         }
 
         // Добавить метод поиска клиента без создания токена после исполнения
