@@ -104,6 +104,14 @@ namespace Infrastructure.Repositories
                 "discount" => c => c.Discount
             };
 
+            Expression<Func<Client, object>> sortings = filter?.ToLower() switch
+            {
+                "name" => c => c.Name,
+                "code" => c => c.Code,
+                "address" => c => c.Address,
+                "discount" => c => c.Discount
+            };
+
             if (!string.IsNullOrWhiteSpace(searchInput) && sort == "asc")
             {
                 clients = clients.Where(filters).OrderBy(sorting);
