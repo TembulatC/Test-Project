@@ -1,0 +1,56 @@
+﻿@model Domain.Contracts.CreateClientRequest
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<div id="app"></div>
+
+@section scripts {
+    <script type="text/javascript" src="~/js/register.js" asp-append-version="true"></script>
+    <script>
+        $(document).on('click', '#loginButton', function () {
+            let message = {
+                login: $('#nameString').val(),
+                password: $('#passwordString').val(),
+                city: $('#cityString').val(),
+                street: $('#streetString').val(),
+                number: $('#numberString').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/Auth/Register",
+                data: JSON.stringify(message),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    document.getElementById("results").style.display = "block";
+                    document.getElementById("results").style.color = "black";
+                    $("#results").html('Загрузка...');
+                },
+                success: function () {
+                    document.getElementById("results").style.color = "green";
+                    $('#results').html('Вы успешно зарегистрировались!');
+                    setTimeout(function() {
+                        window.location = './Auth';
+                    }, 600);
+                },
+                error: function (xhr) {
+                    document.getElementById("results").style.color = "red";
+                    document.getElementById("results").classList.add('shake');
+                    if (xhr.status == 400) {
+                        $('#results').html('Данные введены некорректно!');
+                    }
+                    else if (xhr.status == 409) {
+                        $('#results').html('Логин занят!');
+                    }
+                    setTimeout(function() {
+                        document.getElementById("results").classList.remove('shake');
+                    }, 600);
+                }
+            });
+
+            return false;
+        })
+    </script>
+}
