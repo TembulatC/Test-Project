@@ -10,6 +10,7 @@ using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Linq.Expressions;
+using NUglify.JavaScript.Syntax;
 
 namespace Infrastructure.Repositories
 {
@@ -84,6 +85,32 @@ namespace Infrastructure.Repositories
             }
         }
 
+        private IQueryable<Client> GetByOrder(string searchInput, string filter, string sort, IQueryable<Client> clients)
+        {
+            Expression<Func<Client, object>> sorting = filter?.ToLower() switch
+            {
+                "name" => c => c.Name,
+                "code" => c => c.Code,
+                "address" => c => c.Address,
+                "discount" => c => c.Discount
+            };
+
+            var clientsFilters = clients;
+
+            switch(sort)
+            {
+                case "asc":
+                    clientsFilters = clientsFilters.OrderBy(sorting);
+                    break;
+
+                case "desc":
+                    clientsFilters = clientsFilters.OrderByDescending(sorting);
+                    break;
+            }
+
+            return clientsFilters;
+        }
+
         public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort)
         {
             var clients = _dbContext.Clients.AsNoTracking();
@@ -96,23 +123,16 @@ namespace Infrastructure.Repositories
                 "discount" => c => c.Discount == searchDiscountInput
             };
 
-            Expression<Func<Client, object>> sorting = filter?.ToLower() switch
+            switch (string.IsNullOrWhiteSpace(searchInput))
             {
-                "name" => c => c.Name,
-                "code" => c => c.Code,
-                "address" => c => c.Address,
-                "discount" => c => c.Discount
-            };
+                case false:
+                    clients = GetByOrder(searchInput, filter, sort, clients.Where(filters));
+                    break;
 
-            if (!string.IsNullOrWhiteSpace(searchInput) && sort == "asc")
-            {
-                clients = clients.Where(filters).OrderBy(sorting);
+                case true:
+                    clients = clients.OrderByDescending(c => c.Code);
+                    break;
 
-            }
-
-            else if (!string.IsNullOrWhiteSpace(searchInput) && sort == "desc")
-            {
-                clients = clients.Where(filters).OrderByDescending(sorting);
             }
 
             return await clients.ToListAsync();
