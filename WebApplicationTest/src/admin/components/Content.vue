@@ -38,7 +38,7 @@
                     <option class="byS" value="desc">Убыванию</option>
                 </select>
 
-                <input id="searchString" type="search" placeholder="Поиск по имени, коду, адресу или скидке" />
+                <input id="searchString" type="search" @keydown.enter="GetClientsByFilter" placeholder="Поиск по имени, коду, адресу или скидке" />
                 <button id="searchBtn" type="button" @click="GetClientsByFilter">Найти</button>
             </form>
         </div>
@@ -55,7 +55,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     <tr v-for="client in clientsSort">
                         <td class="col5"><input type="checkbox" name="selectAll" /></td>
                         <td class="col1">{{ client.name }}</td>
@@ -65,6 +64,15 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="pages">
+            <form method="get" class="pagesForm" @submit.prevent>
+                <button class="backward" type="button" @click="PageNavigation">&lt;</button>
+                <input type="text" id="searchPageString" @keydown.enter="GetClientsByFilter" value="1"/>
+                <span>из {{ clientsCount }}</span>
+                <button class="forward" type="button" @click="PageNavigation">&gt;</button>
+            </form>
         </div>
     </div>
     <div id="orderContent">
@@ -95,7 +103,6 @@
     #clientContent {
         display: none;
         position: relative;
-        top: 50px;
     }
 
     #orderContent {
@@ -105,10 +112,10 @@
     }
 
     #Buttons {
-        width: 350px;
-        position: absolute;
-        top: 100px;
-        left: 100px;
+        display: inline-block;
+        width: 340px;
+        position: relative;
+        margin: 100px 0 0 150px;
     }
 
     #Buttons button {
@@ -140,11 +147,10 @@
     }
 
     #divTabel {
-        position: absolute;
-        left: 100px;
-        top: 250px;
+        position: relative;
         width: calc(100% - 250px);
         transition: all 0.5s;
+        margin: 30px 100px 0 150px;
     }
 
     table {
@@ -154,7 +160,6 @@
         border-radius: 5px;
         border-collapse: separate;
         border-spacing: 0px;
-        margin-bottom: 20px;
     }
 
         table thead th {
@@ -216,23 +221,26 @@
     }
 
     #search {
-        width: 700px;
-        position: absolute;
-        top: 167px;
-        right: 145px;
+        width: 589px;
+        position: relative;
         transition: all 0.5s;
+        float: right;
+        display: inline-block;
+        margin: 92px 100px 75px 65px;
+        right: 0px;
     }
 
 
-     #search input {
-        position: absolute;
-        right: 85px;
-        outline: none;
-        border: 1px solid rgb(38, 123, 120); 
-        height: 30px;
-        width: 275px;
-        border-radius: 5px;
-        padding-left: 10px;
+        #search input {
+            position: relative;
+            left: 235px;
+            outline: none;
+            border: 1px solid rgb(38, 123, 120);
+            height: 30px;
+            width: 275px;
+            border-radius: 5px;
+            padding-left: 10px;
+            transition: all 0.5s;
      }
 
         #search input:hover {
@@ -245,18 +253,18 @@
             transition: all 0.5s;
         }
 
-    #search button {
-        position: absolute;
-        outline: none;
-        border: none;
-        height: 30px;
-        width: 70px;
-        font-weight: bold;
-        border-radius: 5px;
-        background-color: rgb(38, 123, 120);
-        color: white;
-        right: 5px;
-    }
+        #search button {
+            position: relative;
+            outline: none;
+            border: none;
+            height: 30px;
+            width: 70px;
+            font-weight: bold;
+            border-radius: 5px;
+            background-color: rgb(38, 123, 120);
+            color: white;
+            float: right;
+        }
 
         #search button:hover {
             background-color: rgb(83, 189, 166);
@@ -264,16 +272,16 @@
         }
 
     form label {
-        top: 46px;
-        right: 323px;
-        position: absolute;
+        top: 75px;
+        right: 35px;
+        position: relative;
     }
 
     #filterBy {
         text-align: center;
-        position: absolute;
-        top: 41px;
-        right: 250px;
+        position: relative;
+        top: 75px;
+        right: 30px;
         height: 30px;
         outline: none;
         border: 1px solid rgb(38, 123, 120);
@@ -291,16 +299,15 @@
         }
 
     .label {
-        top: 46px;
-        right: 114px;
-        position: absolute;
+        top: 75px;
+        right: 5px;
+        position: relative;
     }
 
     #sortBy {
-        position: absolute;
+        position: relative;
         text-align: center;
-        right: 5px;
-        top: 41px;
+        top: 75px;
         height: 30px;
         outline: none;
         border: 1px solid rgb(38, 123, 120);
@@ -319,9 +326,9 @@
 
     #showBy {
         text-align: center;
-        position: absolute;
-        top: 41px;
-        right: 416px;
+        position: relative;
+        top: 75px;
+        right: 60px;
         height: 30px;
         outline: none;
         border: 1px solid rgb(38, 123, 120);
@@ -339,13 +346,59 @@
         }
 
     .label2 {
-        right: 467px;
-        position: absolute;
+        right: 65px;
+        position: relative;
+        top: 75px;
     }
 
     select-container {
         position: relative;
         overflow: hidden;
+    }
+
+    .pages {
+        position: relative;
+        width: 233px;
+        margin: 40px 0 40px 150px;
+    }
+
+    .pagesForm button {
+        border: none;
+        outline: none;
+        height: 30px;
+        width: 30px;
+        color: white;
+        font-weight: bold;
+        border-radius: 5px;
+        background-color: rgb(38, 123, 120);
+    }
+
+        .pagesForm button:hover {
+            background-color: rgb(83, 189, 166);
+            transition: all 0.5s;
+        }
+
+    .pagesForm input {
+        height: 30px;
+        width: 50px;
+        outline: none;
+        border: 1px solid rgb(38, 123, 120);
+        border-radius: 5px;
+        margin: 0 10px 0 10px;
+        text-align: center;
+        transition: all 0.5s;
+    }
+
+        .pagesForm input:hover {
+            border-color: rgb(83, 189, 166);
+        }
+
+        .pagesForm input:focus {
+            border-color: rgb(83, 189, 166);
+        }
+
+    .pagesForm span {
+        margin-right: 10px;
     }
 </style>
 
@@ -360,7 +413,11 @@
                 clientModalVisible: false,
                 itemModalVisible: false,
                 orderModalVisible: false,
-                clientsSort: [axios.get("/AdminPage/GetByFilter", { params: { searchInput: null, filter: "code" } }).then(responses => (this.clientsSort = responses.data))]
+                clientsSort: [axios.get("/AdminPage/GetByFilter", { params: { searchInput: null, filter: "name", sort: "asc"} }).then(responses => (this.clientsSort = responses.data))],
+                clientsCount: 0,
+                clientsCountForFilters: [axios.get("/AdminPage/GetAll")
+                    .then(responses => (this.clientsCountForFilters = responses.data.length))
+                    .then(responses => (this.clientsCount = Math.ceil(responses / $('#showBy').val())))],              
             }
         },
         name: 'Content',
@@ -390,10 +447,35 @@
                         filter: $('#filterBy').val(),
                         searchDiscountInput: $('#searchString').val(),
                         sort: $('#sortBy').val(),
+                        page: $('#searchPageString').val(),
                         pageSize: $('#showBy').val()
                     }
                 }).then(responses => (this.clientsSort = responses.data));
+
+                axios.get("/AdminPage/GetByFilter", {
+                    params:
+                    {
+                        searchInput: $('#searchString').val(),
+                        filter: $('#filterBy').val(),
+                        searchDiscountInput: $('#searchString').val(),
+                        sort: $('#sortBy').val(),
+                        pageSize: this.clientsCountForFilters
+                    }
+                }).then(responses => (this.clientsCount = Math.ceil(responses.data.length / $('#showBy').val())));
             },
+
+
+            PageNavigation(btn) {
+                if (btn.target.classList.contains("forward")) {
+                    ++btn.target.parentElement.querySelector("input").value;
+                }
+
+                else if (btn.target.classList.contains("backward")) {
+                    --btn.target.parentElement.querySelector("input").value;
+                }
+
+                this.GetClientsByFilter();
+            }
         }
     }
 </script>

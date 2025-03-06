@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,9 +89,14 @@ namespace Domain.Services
 
         }
 
-        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort, int pageSize)
+        public async Task<List<Client>> GetAll()
         {
-            return await _clientRepository.GetByFilter(searchInput, filter, searchDiscountInput, sort, pageSize);
+            return await _clientRepository.GetAll();
+        }
+
+        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort, int page, int pageSize)
+        {
+            return await _clientRepository.GetByFilter(searchInput, filter, searchDiscountInput, sort, page, pageSize);
         }
 
         // Добавить метод поиска клиента без создания токена после исполнения

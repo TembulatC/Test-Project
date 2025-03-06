@@ -41,7 +41,15 @@ namespace Infrastructure.Repositories
             return client;
         }
 
-        private IQueryable<Client> GetByOrder(string searchInput, string filter, string sort, int pageSize, IQueryable<Client> clients)
+        public async Task<List<Client>> GetAll()
+        {
+            return await _dbContext.Clients
+                .AsNoTracking()
+                .OrderByDescending(c => c.Code)
+                .ToListAsync();
+        }
+
+        private IQueryable<Client> GetByOrder(string filter, string sort, IQueryable<Client> clients)
         {
             Expression<Func<Client, object>> sorting = filter?.ToLower() switch
             {
@@ -56,18 +64,18 @@ namespace Infrastructure.Repositories
             switch(sort)
             {
                 case "asc":
-                    clientsFilters = clientsFilters.OrderBy(sorting).Take(pageSize);
+                    clientsFilters = clientsFilters.OrderBy(sorting);
                     break;
 
                 case "desc":
-                    clientsFilters = clientsFilters.OrderByDescending(sorting).Take(pageSize);
+                    clientsFilters = clientsFilters.OrderByDescending(sorting);
                     break;
             }
 
             return clientsFilters;
         }
 
-        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort, int pageSize)
+        public async Task<List<Client>> GetByFilter(string searchInput, string filter, int searchDiscountInput, string sort, int page, int pageSize)
         {
             var clients = _dbContext.Clients.AsNoTracking();
 
@@ -82,16 +90,16 @@ namespace Infrastructure.Repositories
             switch (string.IsNullOrWhiteSpace(searchInput))
             {
                 case false:
-                    clients = GetByOrder(searchInput, filter, sort, pageSize, clients.Where(filters));
+                    clients = GetByOrder(filter, sort, clients.Where(filters));
                     break;
 
                 case true:
-                    clients = clients.OrderByDescending(c => c.Code).Take(pageSize);
+                    clients = GetByOrder(filter, sort, clients);
                     break;
 
             }
 
-            return await clients.ToListAsync();
+            return await clients.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
     }
 }

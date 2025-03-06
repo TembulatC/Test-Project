@@ -1,10 +1,8 @@
 ﻿<template>
     <div id="head">
-        <div id="content">
-            <div id="statusHeader">Администрирование сайта</div>
-            <div id="href"><a href="./ClientPage">Ваш сайт  &#x1F517</a></div>
-            <div id="profile">Kunjut</div>
-        </div>
+        <div id="statusHeader">Администрирование сайта</div>
+        <div id="href"><a href="./ClientPage">Ваш сайт  &#x1F517</a></div>
+        <div id="profile">Kunjut</div>
     </div>
 </template>
 
@@ -14,32 +12,30 @@
 
 <style>
     #head {
+        position: relative;
         font-family: 'Open Sans', sans-serif;
-        position: absolute;
         width: 100%;
         height: 50px;
         border-bottom: solid 1px #b9b9b9;
     }
 
-    #content {
-        position: relative;
-    }
-
     #statusHeader {
         position: absolute;
-        padding: 16px 16px 16px 25px;
+        left: 100px;
+        top: 16px;
     }
 
     #href {
         position: absolute;
-        padding-top: 14px;
-        left: 260px;
+        left: 350px;
+        top: 14px;
     }
 
     #profile {
         position: absolute;
-        right: 50px;
-        padding: 16px;
+        right: 0px;
+        padding: 16px 50px;
+        transition: all 0.5s;
     }
 
     #profile a {

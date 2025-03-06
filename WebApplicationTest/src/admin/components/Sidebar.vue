@@ -115,9 +115,14 @@
         font-weight: bold;
         font-size: 35px;
         left: -140px;
+        opacity: 0;
+        width: 100px;
+        line-height: 50px;
+        position: fixed;
+        color: white;
+        transition: 0.5s;
     }
-
-    span {
+    .animate {
         opacity: 0;
         width: 100px;
         line-height: 50px;
@@ -162,8 +167,8 @@
     }
 
     #main {
+        left: 0;
         position: relative;
-        left: 50px;
         width: 100%;
         transition: all 0.5s;
     }
@@ -197,9 +202,10 @@
                     document.getElementById("spanElement").style.left = "40px";
                     document.getElementById("spanElement1").style.left = "40px";
                     document.getElementById("spanElement2").style.left = "40px";
-                    document.getElementById("main").style.left = "250px";
+                    document.getElementById("main").style.left = "200px";
+                    document.getElementById("profile").style.right = "200px";
                     document.getElementById("divTabel").style.width = "calc(100% - 500px)";
-                    document.getElementById("search").style.right = "395px";
+                    document.getElementById("search").style.right = "250px";
                     setTimeout(function () {
                         document.getElementById("spanElement").classList.add('showBlock');
                         document.getElementById("spanElement1").classList.add('showBlock');
@@ -231,9 +237,10 @@
                         document.getElementById("spanElement").style.left = "-140px";
                         document.getElementById("spanElement1").style.left = "-140px";
                         document.getElementById("spanElement2").style.left = "-140px";
-                        document.getElementById("main").style.left = "50px";
+                        document.getElementById("main").style.left = "0px";
+                        document.getElementById("profile").style.right = "0px";
                         document.getElementById("divTabel").style.width = "calc(100% - 250px)";
-                        document.getElementById("search").style.right = "150px";
+                        document.getElementById("search").style.right = "0px";
                     }, 200)
                     
                 }

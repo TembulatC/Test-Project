@@ -62,9 +62,16 @@ namespace WebApplicationTest.Controllers
 
         [HttpGet]
         [Route("[controller]/[action]")]
+        public async Task<IActionResult> GetAll()
+        {
+            return Json(await _clientService.GetAll());
+        }
+
+        [HttpGet]
+        [Route("[controller]/[action]")]
         public async Task<IActionResult> GetByFilter([FromQuery] FilterResponse response)
         {
-            return Json(await _clientService.GetByFilter(response.searchInput, response.filter, response.searchDiscountInput, response.sort, response.pageSize));
+            return Json(await _clientService.GetByFilter(response.searchInput, response.filter, response.searchDiscountInput, response.sort, response.page, response.pageSize));
         }
     }
 }

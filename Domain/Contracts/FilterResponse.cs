@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Domain.Contracts
         public string filter { get; set; } = string.Empty;
         public string sort { get; set; } = string.Empty;
         public int searchDiscountInput { get; set; } = 0;
+        public int page { get; set; } = 1;
         public int pageSize { get; set; } = 25;
     }
 }
