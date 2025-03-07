@@ -3,15 +3,17 @@
         <div id="Buttons">
             <h1>Все товары</h1>
             <button id="addButton" @click="itemShowModal">Добавить</button>
-            <button type="button" id="delItemButton">Удалить</button>
-            <button type="button" id="editItemButton">Изменить</button>
+            <button type="button" id="delItemButton2">Удалить</button>
+            <button type="button" id="editItemButton2">Изменить</button>
         </div>
     </div>
     <div id="clientContent">
         <div id="Buttons">
             <h1>Все клиенты</h1>
-            <button id="addButton" @click="clientShowModal">Добавить</button>
-            <button type="button" id="delItemButton">Удалить</button>
+            <button type="button" id="addButton" @click="clientShowModal">Добавить</button>
+            <button class="beforeCheck" id="beforeCheck">Удалить</button>
+            <button type="button" id="delItemButton" @click="deleteClientShowModal">Удалить</button>
+            <button class="beforeCheck edit" id="beforeCheck2">Изменить</button>
             <button type="button" id="editItemButton">Изменить</button>
         </div>
 
@@ -44,10 +46,10 @@
         </div>
 
         <div id="divTabel">
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
-                        <th class="col5"><input type="checkbox" name="select" /></th>
+                        <th class="col5"></th>
                         <th class="col1">Имя</th>
                         <th class="col2">Код</th>
                         <th class="col3">Адрес пункта выдачи</th>
@@ -56,7 +58,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="client in clientsSort">
-                        <td class="col5"><input type="checkbox" name="selectAll" /></td>
+                        <td class="col5"><input type="checkbox" id="check" class="check" @click="CheckShow"/></td>
                         <td class="col1">{{ client.name }}</td>
                         <td class="col2">{{ client.code }}</td>
                         <td class="col3">{{ client.address }}</td>
@@ -127,12 +129,24 @@
             transition: 0.5s;
         }
 
-    #delItemButton {
+    #delItemButton, #delItemButton2 {
+        display: none;
         margin-left: 20px;
     }
 
-    #editItemButton {
+    #editItemButton, #editItemButton2 {
+        display: none;
         margin-left: 20px;
+    }
+
+    #beforeCheck {
+        display: inline;
+    }
+
+    .beforeCheck {      
+        margin-top: 30px;
+        margin-left: 20px;
+        opacity: 0.5;
     }
 
     #Buttons button {
@@ -400,9 +414,15 @@
     .pagesForm span {
         margin-right: 10px;
     }
+
+    #check[type="checkbox"] {
+        accent-color: rgb(38, 123, 120);
+        
+    }
 </style>
 
 <script>
+    import deleteClientContent from './modalWindows/deleteClientContent.vue'
     import clientContent from './modalWindows/clientContent.vue'
     import itemContent from './modalWindows/itemContent.vue'
     import orderContent from './modalWindows/orderContent.vue'
@@ -410,6 +430,7 @@
     export default {
         data() {
             return {
+                deleteClientModalVisible: false,
                 clientModalVisible: false,
                 itemModalVisible: false,
                 orderModalVisible: false,
@@ -422,6 +443,7 @@
         },
         name: 'Content',
         components: {
+            deleteClientContent,
             clientContent,
             itemContent,
             orderContent
@@ -437,6 +459,10 @@
 
             orderShowModal() {
                 this.orderModalVisible = true;
+            },
+
+            deleteClientShowModal() {
+                this.deleteClientModalVisible = true;
             },
 
             GetClientsByFilter() {
@@ -466,16 +492,39 @@
 
 
             PageNavigation(btn) {
-                if (btn.target.classList.contains("forward")) {
+                if (btn.target.classList.contains("forward") && btn.target.parentElement.querySelector("input").value <= (this.clientsCount - 1)) {
                     ++btn.target.parentElement.querySelector("input").value;
+                    this.GetClientsByFilter();
                 }
 
-                else if (btn.target.classList.contains("backward")) {
+                else if (btn.target.classList.contains("backward") && btn.target.parentElement.querySelector("input").value >= 2) {
                     --btn.target.parentElement.querySelector("input").value;
+                    this.GetClientsByFilter();
+                }             
+            },
+
+            CheckShow() {
+                if ($(".check").is(':checked')) {
+                    document.getElementById("beforeCheck").style.display = "none";
+                    document.getElementById("beforeCheck2").style.display = "none";
+                    document.getElementById("delItemButton").style.display = "inline";
+                    document.getElementById("editItemButton").style.display = "inline";
+
+                    $('.table').on('input', '.check', function (e) {
+                        var tr = $(this).closest('tr'),
+                            number = $(tr).find('.col1').text(),
+                            code = $(tr).find('.col2').text();
+                        console.log(number + ' | ' + code);
+                    });                 
                 }
 
-                this.GetClientsByFilter();
-            }
+                else {
+                    document.getElementById("beforeCheck").style.display = "inline";
+                    document.getElementById("beforeCheck2").style.display = "inline";
+                    document.getElementById("delItemButton").style.display = "none";
+                    document.getElementById("editItemButton").style.display = "none";
+                }               
+            },
         }
     }
 </script>

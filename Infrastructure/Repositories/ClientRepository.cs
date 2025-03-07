@@ -96,7 +96,6 @@ namespace Infrastructure.Repositories
                 case true:
                     clients = GetByOrder(filter, sort, clients);
                     break;
-
             }
 
             return await clients.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
