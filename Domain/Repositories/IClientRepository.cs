@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Domain.Contracts;
+using Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Domain.Repositories
         Task<Client> FindClientForAuth(string loginData);
         Task<List<Client>> GetAll();
         Task<List<Client>> GetByFilter(string searchInput, string filters, int searchDiscountInput, string sort, int page, int pageSize);
+        Task DeleteClient(List<Codes> code);
     }
 }

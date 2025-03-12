@@ -27,7 +27,7 @@
             show: {
                 type: Boolean,
                 default: false
-            }
+            },
         },
         methods: {
             hideModal() {

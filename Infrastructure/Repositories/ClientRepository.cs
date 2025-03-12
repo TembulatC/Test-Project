@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Linq.Expressions;
 using NUglify.JavaScript.Syntax;
+using NUglify.JavaScript;
 
 namespace Infrastructure.Repositories
 {
@@ -99,6 +100,14 @@ namespace Infrastructure.Repositories
             }
 
             return await clients.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
+
+        public async Task DeleteClient(List<Codes> code)
+        {
+            foreach (Codes codes in code)
+            {
+                await _dbContext.Clients.Where(c => c.Code == codes.code).ExecuteDeleteAsync();
+            }           
         }
     }
 }

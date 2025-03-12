@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Domain.Contracts;
+using Domain.Models;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -43,10 +44,9 @@ namespace Domain.Services
         public async Task AddClient(string login, string password)
         {
             // Создается код клиента
-            string year = DateTime.Now.ToString("yyyy");
             string time = DateTime.Now.ToString("MMddHHmmss");
             string time2 = DateTime.Now.ToString("fffffff"); 
-            string code = $"{time}-{time2}-{year}";
+            string code = $"{time}-{time2}";
 
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
@@ -99,6 +99,10 @@ namespace Domain.Services
             return await _clientRepository.GetByFilter(searchInput, filter, searchDiscountInput, sort, page, pageSize);
         }
 
+        public async Task DeleteClient(List<Codes> code)
+        {
+            await _clientRepository.DeleteClient(code);      
+        }
         // Добавить метод поиска клиента без создания токена после исполнения
     }
 }

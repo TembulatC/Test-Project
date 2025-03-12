@@ -60,7 +60,7 @@
                     <tr v-for="client in clientsSort">
                         <td class="col5"><input type="checkbox" id="check" class="check" @click="CheckShow"/></td>
                         <td class="col1">{{ client.name }}</td>
-                        <td class="col2">{{ client.code }}</td>
+                        <td data-th_name="code" data-td_name="{{ client.code }}" class="col2">{{ client.code }}</td>
                         <td class="col3">{{ client.address }}</td>
                         <td class="col4">{{ client.discount }} %</td>
                     </tr>
@@ -89,6 +89,7 @@
     <clientContent v-model:show="clientModalVisible"></clientContent>
     <itemContent v-model:show="itemModalVisible"></itemContent>
     <orderContent v-model:show="orderModalVisible"></orderContent>
+    <deleteClientContent v-model:show="deleteClientModalVisible" v-model:check="codeCheckbox"></deleteClientContent>
 </template>
 
 <style>
@@ -430,6 +431,7 @@
     export default {
         data() {
             return {
+                codeCheckbox: [],
                 deleteClientModalVisible: false,
                 clientModalVisible: false,
                 itemModalVisible: false,
@@ -490,7 +492,6 @@
                 }).then(responses => (this.clientsCount = Math.ceil(responses.data.length / $('#showBy').val())));
             },
 
-
             PageNavigation(btn) {
                 if (btn.target.classList.contains("forward") && btn.target.parentElement.querySelector("input").value <= (this.clientsCount - 1)) {
                     ++btn.target.parentElement.querySelector("input").value;
@@ -510,12 +511,30 @@
                     document.getElementById("delItemButton").style.display = "inline";
                     document.getElementById("editItemButton").style.display = "inline";
 
-                    $('.table').on('input', '.check', function (e) {
-                        var tr = $(this).closest('tr'),
-                            number = $(tr).find('.col1').text(),
-                            code = $(tr).find('.col2').text();
-                        console.log(number + ' | ' + code);
-                    });                 
+                    let ls = []
+
+                    $('.check:checkbox:checked').each((index, checkbox) => {                       
+                        let thName, tdName
+                        let td = {}
+
+                        $(checkbox).closest('tr').find('.col2').each(function (b, a) {
+                            tdName = $(this).text();
+                        }).get()
+
+                        $(checkbox).closest('tr').find('td').each(function (i, v) {
+                            thName = $(this).data('th_name');
+                            if (thName !== undefined) {
+                                td[thName] = tdName;
+                            }
+                        }).get();
+
+                        if (td) {
+                            ls[ls.length] = td 
+                        }
+                        
+                    });
+
+                    this.codeCheckbox = ls; 
                 }
 
                 else {
@@ -523,7 +542,7 @@
                     document.getElementById("beforeCheck2").style.display = "inline";
                     document.getElementById("delItemButton").style.display = "none";
                     document.getElementById("editItemButton").style.display = "none";
-                }               
+                }
             },
         }
     }

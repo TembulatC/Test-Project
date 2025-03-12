@@ -2,6 +2,7 @@
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Differencing;
+using System.Threading.Tasks;
 
 namespace WebApplicationTest.Controllers
 {
@@ -72,6 +73,14 @@ namespace WebApplicationTest.Controllers
         public async Task<IActionResult> GetByFilter([FromQuery] FilterResponse response)
         {
             return Json(await _clientService.GetByFilter(response.searchInput, response.filter, response.searchDiscountInput, response.sort, response.page, response.pageSize));
+        }
+
+        [HttpDelete]
+        [Route("[controller]/[action]")]
+        public async Task<IActionResult> DeleteClient([FromBody] DeleteRequest request)
+        {
+            await _clientService.DeleteClient(request.codes);
+            return Json(request);
         }
     }
 }
