@@ -25,14 +25,11 @@ namespace Domain.Contracts
 
         [Required]
         public string number { get; set; } = string.Empty;
-    }
-
-    public record AddClientRequest
-    {
-        [Required]
-        public string login { get; set; } = string.Empty;
 
         [Required]
-        public string password { get; set; } = string.Empty;
+        public string email {  get; set; } = string.Empty;
+
+        [Required]
+        public string phoneNumber { get; set; } = string.Empty;
     }
 }

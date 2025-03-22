@@ -16,6 +16,7 @@ namespace Domain.Contracts
 
     public record Codes
     {
+        [Required]
         public string code { get; set; } = string.Empty;
     }
 }

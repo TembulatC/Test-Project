@@ -14,7 +14,7 @@
             <button class="beforeCheck" id="beforeCheck">Удалить</button>
             <button type="button" id="delItemButton" @click="deleteClientShowModal">Удалить</button>
             <button class="beforeCheck edit" id="beforeCheck2">Изменить</button>
-            <button type="button" id="editItemButton">Изменить</button>
+            <button type="button" id="editItemButton" @click="updateClientShowModal">Изменить</button>
         </div>
 
         <div id="search">
@@ -52,15 +52,19 @@
                         <th class="col5"></th>
                         <th class="col1">Имя</th>
                         <th class="col2">Код</th>
+                        <th class="col6">Почта</th>
+                        <th class="col7">Телефон</th>
                         <th class="col3">Адрес пункта выдачи</th>
                         <th class="col4">Скидка</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="client in clientsSort">
-                        <td class="col5"><input type="checkbox" id="check" class="check" @click="CheckShow"/></td>
+                        <td class="col5"><input type="checkbox" id="check" class="check" @click="CheckShow" /></td>
                         <td class="col1">{{ client.name }}</td>
-                        <td data-th_name="code" data-td_name="{{ client.code }}" class="col2">{{ client.code }}</td>
+                        <td data-th_name="code" class="col2">{{ client.code }}</td>
+                        <td class="col6">{{ client.email }}</td>
+                        <td class="col7">{{ client.phoneNumber }}</td>
                         <td class="col3">{{ client.address }}</td>
                         <td class="col4">{{ client.discount }} %</td>
                     </tr>
@@ -71,7 +75,7 @@
         <div class="pages">
             <form method="get" class="pagesForm" @submit.prevent>
                 <button class="backward" type="button" @click="PageNavigation">&lt;</button>
-                <input type="text" id="searchPageString" @keydown.enter="GetClientsByFilter" value="1"/>
+                <input type="text" id="searchPageString" @keydown.enter="GetClientsByFilter" value="1" />
                 <span>из {{ clientsCount }}</span>
                 <button class="forward" type="button" @click="PageNavigation">&gt;</button>
             </form>
@@ -90,6 +94,7 @@
     <itemContent v-model:show="itemModalVisible"></itemContent>
     <orderContent v-model:show="orderModalVisible"></orderContent>
     <deleteClientContent v-model:show="deleteClientModalVisible" v-model:check="codeCheckbox"></deleteClientContent>
+    <updateClientContent v-model:show="updateClientModalVisible" v-model:check="codeCheckboxForUpdate"></updateClientContent>
 </template>
 
 <style>
@@ -224,7 +229,7 @@
     }
 
     .col3 {
-        width: 40%;
+        width: 20%;
     }
 
     .col4 {
@@ -232,7 +237,15 @@
     }
 
     .col5 {
-        width: 5%;
+        width: 2%;
+    }
+
+    .col6 {
+        width: 13%;
+    }
+
+    .col7 {
+        width: 10%;
     }
 
     #search {
@@ -423,34 +436,44 @@
 </style>
 
 <script>
+    import updateClientContent from './modalWindows/updateClientContent.vue'
     import deleteClientContent from './modalWindows/deleteClientContent.vue'
     import clientContent from './modalWindows/clientContent.vue'
     import itemContent from './modalWindows/itemContent.vue'
     import orderContent from './modalWindows/orderContent.vue'
     import axios from 'axios'
     export default {
+        // Начальыне входные данные
         data() {
             return {
                 codeCheckbox: [],
+                codeCheckboxForUpdate: "",
+                updateClientModalVisible: false,
                 deleteClientModalVisible: false,
                 clientModalVisible: false,
                 itemModalVisible: false,
                 orderModalVisible: false,
+                // Переменная для хранения отфильтрованных пользователей
                 clientsSort: [axios.get("/AdminPage/GetByFilter", { params: { searchInput: null, filter: "name", sort: "asc"} }).then(responses => (this.clientsSort = responses.data))],
-                clientsCount: 0,
+                // Переменная для ъранения количества страниц
+                clientsCount: 0, 
                 clientsCountForFilters: [axios.get("/AdminPage/GetAll")
+                    // Получение количества всех пользователей
                     .then(responses => (this.clientsCountForFilters = responses.data.length))
-                    .then(responses => (this.clientsCount = Math.ceil(responses / $('#showBy').val())))],              
+                    // Получение количества пользователей с учетом фильтра "Показывать на странице"
+                    .then(responses => (this.clientsCount = Math.ceil(responses / $('#showBy').val())))],
             }
         },
         name: 'Content',
         components: {
+            updateClientContent,
             deleteClientContent,
             clientContent,
             itemContent,
             orderContent
         },
         methods: {
+            // Методы для отображения модальных окон
             clientShowModal() {
                 this.clientModalVisible = true;
             },
@@ -467,7 +490,13 @@
                 this.deleteClientModalVisible = true;
             },
 
+            updateClientShowModal() {
+                this.updateClientModalVisible = true;
+            },
+
+            // Метод для фильтрации пользователей
             GetClientsByFilter() {
+                // Axios - запрос для получения пользователей по фильтрам
                 axios.get("/AdminPage/GetByFilter", {
                     params:
                     {
@@ -480,6 +509,7 @@
                     }
                 }).then(responses => (this.clientsSort = responses.data));
 
+                // Axios - запрос для получения количества пользователей по фильтрам для пагинации
                 axios.get("/AdminPage/GetByFilter", {
                     params:
                     {
@@ -492,19 +522,26 @@
                 }).then(responses => (this.clientsCount = Math.ceil(responses.data.length / $('#showBy').val())));
             },
 
+            // Метод для навигации по пользователям
             PageNavigation(btn) {
                 if (btn.target.classList.contains("forward") && btn.target.parentElement.querySelector("input").value <= (this.clientsCount - 1)) {
+                    // При нажатии кнопки ">" идет переход на следующую страницу таблицы
                     ++btn.target.parentElement.querySelector("input").value;
+                    // Вызывается метод для сохранении всех фильтров при переходе на новую страницу
                     this.GetClientsByFilter();
                 }
 
                 else if (btn.target.classList.contains("backward") && btn.target.parentElement.querySelector("input").value >= 2) {
+                    // При нажатии кнопки "<" идет переход на следующую страницу таблицы
                     --btn.target.parentElement.querySelector("input").value;
+                    // Вызывается метод для сохранении всех фильтров при переходе на новую страницу
                     this.GetClientsByFilter();
-                }             
+                }
             },
 
+            // Метод для получение данных пользователя по чекбоксам для удаления и изменения
             CheckShow() {
+                // При нажатии на чекбокс кнопки удаления и изменения выбранного пользователя становятся доступными
                 if ($(".check").is(':checked')) {
                     document.getElementById("beforeCheck").style.display = "none";
                     document.getElementById("beforeCheck2").style.display = "none";
@@ -513,6 +550,8 @@
 
                     let ls = []
 
+                    // Данные выбранных пользователей собираются в массив для последующего удаления либо изменения
+                    // Удаление и изменение пользователей идет по его коду
                     $('.check:checkbox:checked').each((index, checkbox) => {                       
                         let thName, tdName
                         let td = {}
@@ -531,10 +570,18 @@
                         if (td) {
                             ls[ls.length] = td 
                         }
-                        
+
+                        this.codeCheckboxForUpdate = tdName;
                     });
 
+                    // При выборе более одного пользователя становится доступным только кнопка удалить
+                    if (ls.length > 1) {
+                        document.getElementById("editItemButton").style.display = "none";
+                        document.getElementById("beforeCheck2").style.display = "inline";
+                    }
+
                     this.codeCheckbox = ls; 
+                    console.log(this.codeCheckboxForUpdate)
                 }
 
                 else {

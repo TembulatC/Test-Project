@@ -29,7 +29,7 @@ namespace WebApplicationTest.Controllers
 
                 if (client == "ClientNotFound") // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
                 {
-                    await _clientService.AddClient(request.login, request.password, request.city, request.street, request.number);
+                    await _clientService.AddClient(request.login, request.password, request.city, request.street, request.number, request.email, request.phoneNumber);
                     return Json(request);
                 }
                 else // В другом случае возвращаем 409 код ошибки в ajax на обработку

@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace Domain.Models
@@ -8,7 +10,7 @@ namespace Domain.Models
     {
         public Client() { }
 
-        public Client(string name, string password, string code, string address)
+        public Client(string name, string password, string code, string address, string email, string phoneNumber)
         {
             Id = Guid.NewGuid();
             Name = name;
@@ -16,6 +18,8 @@ namespace Domain.Models
             Code = code;
             Address = address;
             Discount = 0;
+            PhoneNumber = phoneNumber;
+            Email = email;
         }
 
         public Guid Id { get; set; }
@@ -24,6 +28,11 @@ namespace Domain.Models
         public string Code { get; set; }
         public string Address { get; set; }
         public int Discount { get; set; }
+        public string Email { get; set; }
+
+        [Column(TypeName = "VARCHAR")]
+        [StringLength(20)]
+        public string PhoneNumber { get; set; }
         public List<Order> Orders { get; set; } = [];
     }
 }

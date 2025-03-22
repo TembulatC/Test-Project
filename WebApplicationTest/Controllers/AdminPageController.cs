@@ -79,8 +79,32 @@ namespace WebApplicationTest.Controllers
         [Route("[controller]/[action]")]
         public async Task<IActionResult> DeleteClient([FromBody] DeleteRequest request)
         {
-            await _clientService.DeleteClient(request.codes);
-            return Json(request);
+            if (ModelState.IsValid)
+            {
+                await _clientService.DeleteClient(request.codes);
+                return Json(request);
+            }
+
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut]
+        [Route("[controller]/[action]")]
+        public async Task<IActionResult> UpdateClient([FromBody] UpdateClientRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                await _clientService.UpdateClient(request.login, request.code, request.password, request.discount);
+                return Json(request);
+            }
+
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

@@ -2,16 +2,9 @@
 using Domain.Models;
 using Infrastructure.Context;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Linq.Expressions;
-using NUglify.JavaScript.Syntax;
-using NUglify.JavaScript;
 
 namespace Infrastructure.Repositories
 {
@@ -26,9 +19,9 @@ namespace Infrastructure.Repositories
         }
 
         // Добавление клиента в базу данных
-        public async Task AddClient(string name, string password, string code, string address)
+        public async Task AddClient(string name, string password, string code, string address, string email, string phoneNumber)
         {
-            var client = new Client(name, password, code, address);
+            var client = new Client(name, password, code, address, email, phoneNumber);
 
             await _dbContext.Clients.AddAsync(client);
             await _dbContext.SaveChangesAsync();
@@ -102,12 +95,18 @@ namespace Infrastructure.Repositories
             return await clients.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public async Task DeleteClient(List<Codes> code)
+        public async Task DeleteClient(string code)
         {
-            foreach (Codes codes in code)
-            {
-                await _dbContext.Clients.Where(c => c.Code == codes.code).ExecuteDeleteAsync();
-            }           
+            await _dbContext.Clients.Where(c => c.Code == code).ExecuteDeleteAsync();         
+        }
+
+        public async Task UpdateClient(string login, string code, string password, int discount)
+        {
+            await _dbContext.Clients.Where(c => c.Code == code)
+                .ExecuteUpdateAsync(u => u
+                .SetProperty(c => c.Name, login)
+                .SetProperty(c => c.Password, password)
+                .SetProperty(c => c.Discount, discount));
         }
     }
 }

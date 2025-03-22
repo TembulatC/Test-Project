@@ -28,7 +28,7 @@ namespace Domain.Services
             _contextAccessor = httpContextAccessor;
         }
 
-        public async Task AddClient(string login, string password, string city, string street, string number)
+        public async Task AddClient(string login, string password, string city, string street, string number, string email, string phoneNumber)
         {
             // Создается код клиента
             string time = DateTime.Now.ToString("MMddhhmmss");
@@ -38,7 +38,7 @@ namespace Domain.Services
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
 
-            await _clientRepository.AddClient(login, hashedPassword, code, $"город {city}, улица {street}, дом {number}");
+            await _clientRepository.AddClient(login, hashedPassword, code, $"город {city}, улица {street}, дом {number}", email, phoneNumber);
         }
 
         public async Task AddClient(string login, string password)
@@ -51,7 +51,7 @@ namespace Domain.Services
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
 
-            await _clientRepository.AddClient(login, hashedPassword, code, "");
+            await _clientRepository.AddClient(login, hashedPassword, code, "", "", "");
         }
 
         public async Task<string> FindClientForAuth(string login, string password)
@@ -68,7 +68,7 @@ namespace Domain.Services
             else
             {
                 string validate;
-                var hashedPassword = _hasherRepository.Verify(password, client.Password); // Расхэширование происходит путем вырезания строки с паролем из колонки Name
+                var hashedPassword = _hasherRepository.Verify(password, client.Password);
                 Console.WriteLine(client.Password);
 
                 if (hashedPassword == false)
@@ -101,8 +101,18 @@ namespace Domain.Services
 
         public async Task DeleteClient(List<Codes> code)
         {
-            await _clientRepository.DeleteClient(code);      
+            foreach (Codes codes in code)
+            {
+                await _clientRepository.DeleteClient(codes.code);
+            }                    
         }
+
+        public async Task UpdateClient(string login, string code, string password, int discount)
+        {
+            string hashedPassword = _hasherRepository.Generate(password);
+            await _clientRepository.UpdateClient(login, code, hashedPassword, discount);
+        }
+
         // Добавить метод поиска клиента без создания токена после исполнения
     }
 }
