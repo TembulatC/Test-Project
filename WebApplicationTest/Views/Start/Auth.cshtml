@@ -1,4 +1,4 @@
-﻿@model Domain.Contracts.CreateClientRequest
+﻿@model Domain.Contracts.CreateClientWithEmailRequest
 @{
     ViewData["Title"] = "Auth";
 }
@@ -10,13 +10,14 @@
     <script>
         $(document).on('click', '#loginButton', function () {
             let message = {
-                login: $('#loginString').val(),
+                loginMethod: "email",
+                email: $('#emailString').val(),
                 password: $('#passwordString').val(),
             };
 
             $.ajax({
                 type: "POST",
-                url: "/Auth/Login",
+                url: "/Auth/LoginWithEmail",
                 data: JSON.stringify(message),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -35,7 +36,7 @@
                 error: function () {
                     document.getElementById("results").style.color = "red";
                     document.getElementById("results").classList.add('shake');
-                    $('#results').html('Неверный логин или пароль!');
+                    $('#results').html('Неверная почта или пароль!');
                     setTimeout(function() {
                         document.getElementById("results").classList.remove('shake');
                     }, 600);
@@ -44,5 +45,47 @@
 
             return false;
         })
+
+        $(document).on('click', '#loginButton2', function () {
+            let message = {
+                loginMethod: "phoneNumber",
+                phoneNumber: $('#phoneString').val(),
+                password: $('#passwordString').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/Auth/LoginWithPhoneNumber",
+                data: JSON.stringify(message),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    document.getElementById("results").style.display = "block";
+                    document.getElementById("results").style.color = "black";
+                    $("#results").html('Загрузка...');
+                },
+                success: function () {
+                    document.getElementById("results").style.color = "green";
+                    $('#results').html('Успех!');
+                    setTimeout(function() {
+                        window.location = '../Home/AdminPage';
+                    }, 600);
+                },
+                error: function () {
+                    document.getElementById("results").style.color = "red";
+                    document.getElementById("results").classList.add('shake');
+                    $('#results').html('Неверный номер телефона или пароль!');
+                    setTimeout(function() {
+                        document.getElementById("results").classList.remove('shake');
+                    }, 600);
+                }
+            });
+
+            return false;
+        })
+
+        $(function(){
+            $("#phoneString").mask("+7 (999) 999-99-99");
+        });
     </script>
 }

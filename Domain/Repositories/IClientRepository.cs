@@ -10,8 +10,8 @@ namespace Domain.Repositories
 {
     public interface IClientRepository
     {
-        Task AddClient(string login, string password, string code, string address, string email, string phoneNumber);
-        Task<Client> FindClientForAuth(string loginData);
+        Task AddClient(string login, string password, string code, string email, string phoneNumber);
+        Task<Client?> FindClientForAuth(string findData, string data);
         Task<List<Client>> GetAll();
         Task<List<Client>> GetByFilter(string searchInput, string filters, int searchDiscountInput, string sort, int page, int pageSize);
         Task DeleteClient(string code);

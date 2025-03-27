@@ -19,20 +19,26 @@ namespace Infrastructure.Repositories
         }
 
         // Добавление клиента в базу данных
-        public async Task AddClient(string name, string password, string code, string address, string email, string phoneNumber)
+        public async Task AddClient(string login, string password, string code, string email, string phoneNumber)
         {
-            var client = new Client(name, password, code, address, email, phoneNumber);
+            var client = new Client(login, password, code, email, phoneNumber);
 
             await _dbContext.Clients.AddAsync(client);
             await _dbContext.SaveChangesAsync();
         }
 
-        // Поиск клиента из базы данных
-        public async Task<Client> FindClientForAuth(string loginData)
+        // Поиск клиента из базы данных по почте
+        public async Task<Client?> FindClientForAuth(string findData, string data)
         {
-            var client = await _dbContext.Clients.AsNoTracking().FirstOrDefaultAsync(c => c.Name == loginData);
+            var client = _dbContext.Clients.AsNoTracking();
 
-            return client;
+            Expression<Func<Client, bool>> findBy = findData?.ToLower() switch
+            {
+                "email" => c => c.Email == data,
+                "phonenumber" => c => c.PhoneNumber == data,
+            };
+
+            return await client.Where(findBy).FirstOrDefaultAsync();
         }
 
         public async Task<List<Client>> GetAll()
@@ -49,7 +55,7 @@ namespace Infrastructure.Repositories
             {
                 "name" => c => c.Name,
                 "code" => c => c.Code,
-                "address" => c => c.Address,
+                "email" => c => c.Email,
                 "discount" => c => c.Discount
             };
 
@@ -77,7 +83,7 @@ namespace Infrastructure.Repositories
             {
                 "name" => c => c.Name.ToLower().Contains(searchInput.ToLower()),
                 "code" => c => c.Code.ToLower().Contains(searchInput.ToLower()),
-                "address" => c => c.Address.ToLower().Contains(searchInput.ToLower()),
+                "email" => c => c.Email.ToLower().Contains(searchInput.ToLower()),
                 "discount" => c => c.Discount == searchDiscountInput
             };
 

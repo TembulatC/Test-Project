@@ -4,14 +4,26 @@
             <h1>Добро пожаловать!</h1>
 
             <form method="post">
-                <div class="string">
-                    <input id="loginString" type="text" placeholder="Логин" />
+                <div class="string" id="emailVision">
+                    <input id="emailString" type="email" placeholder="Почта" />
+                </div>
+                <div class="string" id="phoneVision">
+                    <input id="phoneString" type="tel" placeholder="Телефон" />
                 </div>
                 <div class="string">
                     <input id="passwordString" type="password" placeholder="Пароль" />
                 </div>
-                <div class="button">
+                <div class="button" id="_loginButton">
                     <input type="submit" id="loginButton" value="ВХОД" />
+                </div>
+                <div class="button" id="_loginButton2">
+                    <input type="submit" id="loginButton2" value="ВХОД" />
+                </div>
+                <div class="button button2" id="loginPhoneButton">
+                    <input type="button" @click="switchPhoneNumber" value="ЧЕРЕЗ ТЕЛЕФОН" />
+                </div>
+                <div class="button button2" id="loginEmailButton">
+                    <input type="button" @click="switchEmail" value="ЧЕРЕЗ EMAIL" />
                 </div>
             </form>
 
@@ -24,12 +36,6 @@
 
     <div id="results"></div>
 </template>
-
-<script>
-    export default {
-        name: 'App'
-    }
-</script>
 
 <style>
     * {
@@ -74,6 +80,30 @@
         outline: none;
     }
 
+    #_loginButton {
+        display: block;
+    }
+
+    #_loginButton2 {
+        display: none;
+    }
+
+    #emailVision {
+        display: block;
+    }
+
+    #phoneVision {
+        display: none;
+    }
+
+    #loginPhoneButton {
+        display: block;
+    }
+
+    #loginEmailButton {
+        display: none;
+    }
+
     .string input {
         border-bottom: 2px solid #666666;
         transition: all 0.5s;
@@ -86,6 +116,14 @@
         .string input:focus {
             border-bottom-color: #004250;
         }
+
+    .button {
+        margin: 30px 0 15px 0;
+    }
+
+    .button2 {
+        margin: 15px 0 30px 0;
+    }
 
     .button input {
         font-weight: bold;
@@ -118,7 +156,7 @@
     #results {
         display: none;
         position: absolute;
-        top: 70%;
+        top: 80%;
         left: 50%;
         transform: translate(-50%, -50%);
         background: #fff;
@@ -151,3 +189,28 @@
         animation: shake 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) both;
     }
 </style>
+
+<script>
+    export default {
+        name: 'App',
+        methods: {
+            switchPhoneNumber() {
+                document.getElementById("phoneVision").style.display = "block";
+                document.getElementById("loginPhoneButton").style.display = "none";
+                document.getElementById("loginEmailButton").style.display = "block";
+                document.getElementById("emailVision").style.display = "none";
+                document.getElementById("_loginButton").style.display = "none";
+                document.getElementById("_loginButton2").style.display = "block";
+            },
+
+            switchEmail() {
+                document.getElementById("phoneVision").style.display = "none";
+                document.getElementById("loginPhoneButton").style.display = "block";
+                document.getElementById("loginEmailButton").style.display = "none";
+                document.getElementById("emailVision").style.display = "block";
+                document.getElementById("_loginButton").style.display = "block";
+                document.getElementById("_loginButton2").style.display = "none";
+            }
+        },
+    }
+</script>

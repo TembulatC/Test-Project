@@ -3,8 +3,12 @@ using Domain.Services;
 using Infrastructure.Context;
 using Infrastructure.JWT;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace WebApplicationTest
 {
@@ -17,6 +21,7 @@ namespace WebApplicationTest
             var service = builder.Services;
 
             service.Configure<JWTOptions>(configuration.GetSection("JwtOptions")); // Подключение конфигураций jwt токенов
+            service.AddApiAuthentication(configuration);
 
             // Подключения Swagger
             builder.Services.AddControllersWithViews();
@@ -70,7 +75,7 @@ namespace WebApplicationTest
             app.UseRouting();
             
             app.UseAuthentication();
-            app.UseAuthorization();       
+            app.UseAuthorization();
 
             // Страница являющаяся точкой входа
             app.MapControllerRoute(

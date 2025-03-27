@@ -18,17 +18,15 @@ namespace Domain.Services
         private readonly IClientRepository _clientRepository;
         private readonly IHasherRepository _hasherRepository;
         private readonly IJWTProviderRepository _jwtProviderRepository;
-        private readonly IHttpContextAccessor _contextAccessor;
 
-        public ClientService(IClientRepository clientRepository, IHasherRepository hasherRepository, IJWTProviderRepository jwtProviderRepository, IHttpContextAccessor httpContextAccessor)
+        public ClientService(IClientRepository clientRepository, IHasherRepository hasherRepository, IJWTProviderRepository jwtProviderRepository)
         {
             _clientRepository = clientRepository;
             _hasherRepository = hasherRepository;
             _jwtProviderRepository = jwtProviderRepository;
-            _contextAccessor = httpContextAccessor;
         }
 
-        public async Task AddClient(string login, string password, string city, string street, string number, string email, string phoneNumber)
+        public async Task AddClientWithEmail(string login, string password, string email)
         {
             // Создается код клиента
             string time = DateTime.Now.ToString("MMddhhmmss");
@@ -38,7 +36,20 @@ namespace Domain.Services
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
 
-            await _clientRepository.AddClient(login, hashedPassword, code, $"город {city}, улица {street}, дом {number}", email, phoneNumber);
+            await _clientRepository.AddClient(login, hashedPassword, code, email, "");
+        }
+
+        public async Task AddClientWithPhoneNumber(string login, string password, string phoneNumber)
+        {
+            // Создается код клиента
+            string time = DateTime.Now.ToString("MMddhhmmss");
+            string time2 = DateTime.Now.ToString("fffffff");
+            string code = $"{time}-{time2}";
+
+            // Пароль хэшируется и передается в метод addClient
+            string hashedPassword = _hasherRepository.Generate(password);
+
+            await _clientRepository.AddClient(login, hashedPassword, code, "", phoneNumber);
         }
 
         public async Task AddClient(string login, string password)
@@ -51,12 +62,12 @@ namespace Domain.Services
             // Пароль хэшируется и передается в метод addClient
             string hashedPassword = _hasherRepository.Generate(password);
 
-            await _clientRepository.AddClient(login, hashedPassword, code, "", "", "");
+            await _clientRepository.AddClient(login, hashedPassword, code, "", "");
         }
 
-        public async Task<string> FindClientForAuth(string login, string password)
+        public async Task<string> FindClientForAuth(string findData, string data, string password)
         {
-            var client = await _clientRepository.FindClientForAuth(login);
+            var client = await _clientRepository.FindClientForAuth(findData, data);
 
             // Если такого пользователя нет, то создается новый(используется для регистрации пользователя)
             if (client == null)
@@ -71,17 +82,16 @@ namespace Domain.Services
                 var hashedPassword = _hasherRepository.Verify(password, client.Password);
                 Console.WriteLine(client.Password);
 
-                if (hashedPassword == false)
+                switch(hashedPassword)
                 {
-                    validate = "Error";
-                }
+                    case false:
+                        validate = "Error";
+                        break;
 
-                // Если расхэшированный пароль является верным, то создается Jwt токен содержащий id клиента и отправляется в куки
-                else
-                {
-                    var token = _jwtProviderRepository.GenerateToken(client);
-                    _contextAccessor.HttpContext.Response.Cookies.Append("jwt-token", token);
-                    validate = token;
+                    case true:
+                        var token = _jwtProviderRepository.GenerateToken(client);
+                        validate = token;
+                        break;
                 }
 
                 return validate;

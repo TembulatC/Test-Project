@@ -1,4 +1,4 @@
-﻿@model Domain.Contracts.CreateClientRequest
+﻿@model Domain.Contracts.CreateClientWithEmailRequest
 @{
     ViewData["Title"] = "Registration";
 }
@@ -8,18 +8,17 @@
 @section scripts {
     <script type="text/javascript" src="~/js/register.js" asp-append-version="true"></script>
     <script>
-        $(document).on('click', '#loginButton', function () {
+        $(document).on('click', '#registerButton', function () {
             let message = {
+                registerMethod: "email",
                 login: $('#nameString').val(),
                 password: $('#passwordString').val(),
-                city: $('#cityString').val(),
-                street: $('#streetString').val(),
-                number: $('#numberString').val(),
+                email: $('#emailString').val(),
             };
 
             $.ajax({
                 type: "POST",
-                url: "/Auth/Register",
+                url: "/Auth/RegisterWithEmail",
                 data: JSON.stringify(message),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -42,7 +41,7 @@
                         $('#results').html('Данные введены некорректно!');
                     }
                     else if (xhr.status == 409) {
-                        $('#results').html('Логин занят!');
+                        $('#results').html('Почта занята!');
                     }
                     setTimeout(function() {
                         document.getElementById("results").classList.remove('shake');
@@ -51,6 +50,54 @@
             });
 
             return false;
-        })
+        });
+
+        $(document).on('click', '#registerButton2', function () {
+            let message = {
+                registerMethod: "phoneNumber",
+                login: $('#nameString').val(),
+                password: $('#passwordString').val(),
+                phoneNumber: $('#phoneString').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/Auth/RegisterWithPhoneNumber",
+                data: JSON.stringify(message),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    document.getElementById("results").style.display = "block";
+                    document.getElementById("results").style.color = "black";
+                    $("#results").html('Загрузка...');
+                },
+                success: function () {
+                    document.getElementById("results").style.color = "green";
+                    $('#results').html('Вы успешно зарегистрировались!');
+                    setTimeout(function() {
+                        window.location = './Auth';
+                    }, 600);
+                },
+                error: function (xhr) {
+                    document.getElementById("results").style.color = "red";
+                    document.getElementById("results").classList.add('shake');
+                    if (xhr.status == 400) {
+                        $('#results').html('Данные введены некорректно!');
+                    }
+                    else if (xhr.status == 409) {
+                        $('#results').html('Номер телефона занят!');
+                    }
+                    setTimeout(function() {
+                        document.getElementById("results").classList.remove('shake');
+                    }, 600);
+                }
+            });
+
+            return false;
+        });
+
+        $(function(){
+            $("#phoneString").mask("+7 (999) 999-99-99");
+        });
     </script>
 }

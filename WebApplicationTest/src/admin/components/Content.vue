@@ -30,7 +30,7 @@
                 <select id="filterBy">
                     <option value="name">Имени</option>
                     <option value="code">Коду</option>
-                    <option value="address">Адресу</option>
+                    <option value="email">Почте</option>
                     <option value="discount">Скидке</option>
                 </select>
 
@@ -54,7 +54,6 @@
                         <th class="col2">Код</th>
                         <th class="col6">Почта</th>
                         <th class="col7">Телефон</th>
-                        <th class="col3">Адрес пункта выдачи</th>
                         <th class="col4">Скидка</th>
                     </tr>
                 </thead>
@@ -65,7 +64,6 @@
                         <td data-th_name="code" class="col2">{{ client.code }}</td>
                         <td class="col6">{{ client.email }}</td>
                         <td class="col7">{{ client.phoneNumber }}</td>
-                        <td class="col3">{{ client.address }}</td>
                         <td class="col4">{{ client.discount }} %</td>
                     </tr>
                 </tbody>
@@ -221,19 +219,15 @@
         }
 
     .col1 {
-        width: 15%;
+        width: 25%;
     }
 
     .col2 {
-        width: 10%;
-    }
-
-    .col3 {
-        width: 20%;
+        width: 13%;
     }
 
     .col4 {
-        width: 6%;
+        width: 5%;
     }
 
     .col5 {
@@ -241,11 +235,11 @@
     }
 
     .col6 {
-        width: 13%;
+        width: 35%;
     }
 
     .col7 {
-        width: 10%;
+        width: 20%;
     }
 
     #search {

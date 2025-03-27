@@ -10,17 +10,23 @@
                 <div class="string">
                     <input id="passwordString" type="password" placeholder="Пароль" />
                 </div>
-                <div class="string">
-                    <input id="cityString" type="text" placeholder="Город проживания" />
+                <div class="string" id="emailVision">
+                    <input id="emailString" type="email" placeholder="Почта" />
                 </div>
-                <div class="string">
-                    <input id="streetString" type="text" placeholder="Улица пункта выдачи" />
+                <div class="string" id="phoneVision">
+                    <input id="phoneString" type="tel" placeholder="Телефон"/>
                 </div>
-                <div class="string">
-                    <input id="numberString" type="text" placeholder="Номер дома пункта выдачи" />
+                <div class="button" id="_registerButton">
+                    <input type="submit" id="registerButton" value="ЗАРЕГИСТРИРОВАТЬСЯ" />
                 </div>
-                <div class="button">
-                    <input type="submit" id="loginButton" value="ЗАРЕГИСТРИРОВАТЬСЯ" />
+                <div class="button" id="_registerButton2">
+                    <input type="submit" id="registerButton2" value="ЗАРЕГИСТРИРОВАТЬСЯ" />
+                </div>
+                <div class="button button2" id="registerPhoneButton">
+                    <input type="button" @click="switchPhoneNumber" value="ЧЕРЕЗ ТЕЛЕФОН" />
+                </div>
+                <div class="button button2" id="registerEmailButton">
+                    <input type="button" @click="switchEmail" value="ЧЕРЕЗ EMAIL" />
                 </div>
             </form>
 
@@ -35,7 +41,26 @@
 
 <script>
     export default {
-        name: 'App'
+        name: 'App',
+        methods: {
+            switchPhoneNumber() {
+                document.getElementById("phoneVision").style.display = "block";
+                document.getElementById("registerPhoneButton").style.display = "none";
+                document.getElementById("registerEmailButton").style.display = "block";
+                document.getElementById("emailVision").style.display = "none";
+                document.getElementById("_registerButton").style.display = "none";
+                document.getElementById("_registerButton2").style.display = "block";
+            },
+
+            switchEmail() {
+                document.getElementById("phoneVision").style.display = "none";
+                document.getElementById("registerPhoneButton").style.display = "block";
+                document.getElementById("registerEmailButton").style.display = "none";
+                document.getElementById("emailVision").style.display = "block";
+                document.getElementById("_registerButton").style.display = "block";
+                document.getElementById("_registerButton2").style.display = "none";
+            }
+        },
     }
 </script>
 
@@ -94,6 +119,38 @@
         .string input:focus {
             border-bottom-color: #004250;
         }
+
+    #emailVision {
+        display: block;
+    }
+
+    #phoneVision {
+        display: none;
+    }
+
+    #_registerButton {
+        display: block;
+    }
+
+    #_registerButton2 {
+        display: none;
+    }
+
+    #registerPhoneButton {
+        display: block;
+    }
+
+    #registerEmailButton {
+        display: none;
+    }
+
+    .button {
+        margin: 30px 0 15px 0;
+    }
+
+    .button2 {
+        margin: 15px 0 30px 0;
+    }
 
     .button input {
         font-weight: bold;

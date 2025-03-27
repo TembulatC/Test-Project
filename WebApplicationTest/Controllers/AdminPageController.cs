@@ -1,5 +1,6 @@
 ﻿using Domain.Contracts;
 using Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Differencing;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace WebApplicationTest.Controllers
             _iItemService = itemService;
         }
 
+        [Authorize]
         [HttpPost]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> AddClient([FromBody] AddClientRequest request)
@@ -26,9 +28,10 @@ namespace WebApplicationTest.Controllers
             if (ModelState.IsValid)
             {
                 // Проверка на наличие пользователя
-                var client = await _clientService.FindClientForAuth(request.login, request.password);
+                var clientByEmail = await _clientService.FindClientForAuth("email", request.email, request.password);
+                var clientByPhoneNumber = await _clientService.FindClientForAuth("phoneNumber", request.phoneNumber, request.password);
 
-                if (client == "ClientNotFound") // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
+                if (clientByEmail == "ClientNotFound" || clientByPhoneNumber == "ClientNotFound") // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
                 {
                     await _clientService.AddClient(request.login, request.password);
                     return Json(request);
@@ -45,6 +48,7 @@ namespace WebApplicationTest.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> AddItem([FromBody] CreateItemRequest request)
@@ -61,6 +65,7 @@ namespace WebApplicationTest.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> GetAll()
@@ -68,6 +73,7 @@ namespace WebApplicationTest.Controllers
             return Json(await _clientService.GetAll());
         }
 
+        [Authorize]
         [HttpGet]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> GetByFilter([FromQuery] FilterResponse response)
@@ -75,6 +81,7 @@ namespace WebApplicationTest.Controllers
             return Json(await _clientService.GetByFilter(response.searchInput, response.filter, response.searchDiscountInput, response.sort, response.page, response.pageSize));
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> DeleteClient([FromBody] DeleteRequest request)
@@ -91,6 +98,7 @@ namespace WebApplicationTest.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> UpdateClient([FromBody] UpdateClientRequest request)
