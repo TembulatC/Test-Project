@@ -68,7 +68,20 @@
                     document.getElementById("results").style.color = "green";
                     $('#results').html('Успех!');
                     setTimeout(function() {
-                        window.location = '../Home/AdminPage';
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Start/ConfirmAuth',
+                            dataType: "html",
+                            success: function (result) {
+                                $("#app").html(result);
+
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '/Auth/ConfirmCodeForNumber',
+                                    contentType: "application/json; charset=utf-8",
+                                });
+                            },
+                        });
                     }, 600);
                 },
                 error: function () {

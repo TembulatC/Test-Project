@@ -4,19 +4,21 @@ using Domain.Services;
 using Domain.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
-using NuGet.Common;
+using System.Net;
 
 namespace WebApplicationTest.Controllers
 {
     public class AuthController : Controller
     {
         private readonly ClientService _clientService;
+        private readonly SMSService _smsService;
         private readonly IHttpContextAccessor _httpContext;
 
-        public AuthController(ClientService clientService, IHttpContextAccessor httpContext)
+        public AuthController(ClientService clientService, SMSService smsService, IHttpContextAccessor httpContext)
         {
             _clientService = clientService;
             _httpContext = httpContext;
+            _smsService = smsService;
         }
 
         [HttpPost]
@@ -61,6 +63,7 @@ namespace WebApplicationTest.Controllers
                 if (client == "ClientNotFound") // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
                 {
                     await _clientService.AddClientWithPhoneNumber(request.login, request.password, request.phoneNumber);
+                    await _smsService.SendSMSPhone(request.phoneNumber);
                     return Json(request);
                 }
                 else // В другом случае возвращаем 409 код ошибки в ajax на обработку
@@ -106,6 +109,7 @@ namespace WebApplicationTest.Controllers
             }
         }
 
+
         [HttpPost]
         [Route("[controller]/[action]")]
         public async Task<IActionResult> LoginWithPhoneNumber([FromBody] LoginClientWithPhoneNumberRequest request) // Данные берутся из тела ajax-запроса
@@ -127,7 +131,7 @@ namespace WebApplicationTest.Controllers
                 {
                     _httpContext.HttpContext!.Response.Cookies.Append("jwt-token", validation);
                     Console.WriteLine(validation);
-                    return Json(request);
+                    return Json(request);                 
                 }
             }
             // Если есть пустое поле, то возвращаем 400 код ошибки в ajax
@@ -135,6 +139,16 @@ namespace WebApplicationTest.Controllers
             {
                 return BadRequest();
             }
+        }    
+        
+        [HttpGet]
+        [Route("[controller]/[action]")]
+        public async Task<IActionResult> ConfirmCodeForNumber(LoginClientWithPhoneNumberRequest request)
+        {
+            CodeConfirmRequest codeConfirmRequest = new CodeConfirmRequest();
+            await _httpContext.HttpContext!.Response.WriteAsJsonAsync(codeConfirmRequest.Code = await _smsService.SendSMSPhone(request.phoneNumber));
+
+            return Json(codeConfirmRequest);
         }
     }
 }

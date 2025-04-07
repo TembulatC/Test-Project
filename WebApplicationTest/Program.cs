@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 namespace WebApplicationTest
@@ -43,6 +42,7 @@ namespace WebApplicationTest
             builder.Services.AddScoped<IJWTProviderRepository, JWTProvider>();
             builder.Services.AddScoped<ClientService>();
             builder.Services.AddScoped<ItemService>();
+            builder.Services.AddScoped<SMSService>();
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var app = builder.Build();

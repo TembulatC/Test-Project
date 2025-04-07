@@ -8,6 +8,7 @@ module.exports = {
     entry: {
         auth: './src/auth/main.js',
         register: './src/register/main.js',
+        confirm: './src/confirm/main.js',
         admin: './src/admin/main.js',
     },
 
