@@ -141,14 +141,21 @@ namespace WebApplicationTest.Controllers
             }
         }    
         
-        [HttpGet]
+        [HttpPost]
         [Route("[controller]/[action]")]
-        public async Task<IActionResult> ConfirmCodeForNumber(LoginClientWithPhoneNumberRequest request)
+        public async Task SendConfirmCodeForNumber([FromBody] PhoneData request)
         {
-            CodeConfirmRequest codeConfirmRequest = new CodeConfirmRequest();
-            await _httpContext.HttpContext!.Response.WriteAsJsonAsync(codeConfirmRequest.Code = await _smsService.SendSMSPhone(request.phoneNumber));
+            await _smsService.SendSMSPhone(request.phoneNumber);
+        }
 
-            return Json(codeConfirmRequest);
+        [HttpPost]
+        [Route("[controller]/[action]")]
+        public async Task ConfirmForNumber([FromBody] CodeForComparisonRequest request, CodeConfirmRequest codeConfirmRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                Console.WriteLine($"{codeConfirmRequest.Code}");
+            }
         }
     }
 }

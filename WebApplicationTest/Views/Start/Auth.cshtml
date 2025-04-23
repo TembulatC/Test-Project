@@ -53,6 +53,10 @@
                 password: $('#passwordString').val(),
             };
 
+            let phone = {
+                phoneNumber: $('#phoneString').val()
+            };
+
             $.ajax({
                 type: "POST",
                 url: "/Auth/LoginWithPhoneNumber",
@@ -76,8 +80,9 @@
                                 $("#app").html(result);
 
                                 $.ajax({
-                                    type: 'GET',
-                                    url: '/Auth/ConfirmCodeForNumber',
+                                    type: "POST",
+                                    url: '/Auth/SendConfirmCodeForNumber',
+                                    data: JSON.stringify(phone),
                                     contentType: "application/json; charset=utf-8",
                                 });
                             },

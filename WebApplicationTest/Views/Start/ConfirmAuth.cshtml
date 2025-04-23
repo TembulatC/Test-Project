@@ -7,4 +7,42 @@
 
 @section scripts {
     <script type="text/javascript" src="~/js/confirm.js"></script>
+    
+    <script>
+         $(document).on('click', '#loginConfirmButton', function () {
+            let message = {
+                codeForComparison: $('#codeString').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/Auth/ConfirmForNumber",
+                data: JSON.stringify(message),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                beforeSend: function () {
+                    document.getElementById("results").style.display = "block";
+                    document.getElementById("results").style.color = "black";
+                    $("#results").html('Загрузка...');
+                },
+                success: function () {
+                    document.getElementById("results").style.color = "green";
+                    $('#results').html('Успех!');
+                    setTimeout(function() {
+                        window.location = '../Home/AdminPage';
+                    }, 600);
+                },
+                error: function () {
+                    document.getElementById("results").style.color = "red";
+                    document.getElementById("results").classList.add('shake');
+                    $('#results').html('Неверный код!');
+                    setTimeout(function() {
+                        document.getElementById("results").classList.remove('shake');
+                    }, 600);
+                }
+            });
+
+            return false;
+        })
+    </script>
 }
