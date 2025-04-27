@@ -1,7 +1,7 @@
 ﻿<template>
     <div class="orderModal" v-if="show" @click.stop="hideModal">
         <div class="modalContent" @click.stop>
-            чгоооооооо3
+            Здесь скоро будут заказы!
         </div>
     </div>
 </template>

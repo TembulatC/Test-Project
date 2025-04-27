@@ -8,7 +8,7 @@
                     <input id="codeString" type="text" placeholder="Введите код с SMS" />
                 </div>
                 <div class="button">
-                    <input type="submit" id="loginConfirmButton" value="ВХОД" />
+                    <input type="submit" id="registerConfirmButton" value="РЕГИСТРАЦИЯ" />
                 </div>
             </form>
 

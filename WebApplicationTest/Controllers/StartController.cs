@@ -19,9 +19,9 @@ namespace WebApplicationTest.Controllers
 
         [HttpPost]
         [Route("[controller]/[action]")]
-        public IActionResult ConfirmAuth()
+        public IActionResult ConfirmRegister()
         {
-            return View("ConfirmAuth");
+            return View("ConfirmRegister");
         }
     }
 }

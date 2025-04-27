@@ -1,5 +1,5 @@
 ﻿import { createApp } from 'vue'
-import ConfirmAuth from './ConfirmAuth.vue'
+import ConfirmAuth from './ConfirmRegister.vue'
 
 
 createApp(ConfirmAuth).mount('#main')

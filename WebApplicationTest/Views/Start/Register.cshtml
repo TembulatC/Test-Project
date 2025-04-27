@@ -60,6 +60,10 @@
                 phoneNumber: $('#phoneString').val(),
             };
 
+            let phone = {
+                phoneNumber: $('#phoneString').val()
+            };
+
             $.ajax({
                 type: "POST",
                 url: "/Auth/RegisterWithPhoneNumber",
@@ -72,10 +76,24 @@
                     $("#results").html('Загрузка...');
                 },
                 success: function () {
-                    document.getElementById("results").style.color = "green";
-                    $('#results').html('Вы успешно зарегистрировались!');
+                    document.getElementById("results").style.color = "black";
+                    $('#results').html('Переход на страницу подтверждения...');
                     setTimeout(function() {
-                        window.location = './Auth';
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Start/ConfirmRegister',
+                            dataType: "html",
+                            success: function (result) {
+                                $("#app").html(result);
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/Auth/SendConfirmCodeForNumber',
+                                    data: JSON.stringify(phone),
+                                    contentType: "application/json; charset=utf-8",
+                                });
+                            },
+                        });
                     }, 600);
                 },
                 error: function (xhr) {

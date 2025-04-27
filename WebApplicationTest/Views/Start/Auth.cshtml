@@ -53,10 +53,6 @@
                 password: $('#passwordString').val(),
             };
 
-            let phone = {
-                phoneNumber: $('#phoneString').val()
-            };
-
             $.ajax({
                 type: "POST",
                 url: "/Auth/LoginWithPhoneNumber",
@@ -71,22 +67,9 @@
                 success: function () {
                     document.getElementById("results").style.color = "green";
                     $('#results').html('Успех!');
-                    setTimeout(function() {
-                        $.ajax({
-                            type: 'POST',
-                            url: '/Start/ConfirmAuth',
-                            dataType: "html",
-                            success: function (result) {
-                                $("#app").html(result);
 
-                                $.ajax({
-                                    type: "POST",
-                                    url: '/Auth/SendConfirmCodeForNumber',
-                                    data: JSON.stringify(phone),
-                                    contentType: "application/json; charset=utf-8",
-                                });
-                            },
-                        });
+                    setTimeout(function() {
+                        window.location = '../Home/AdminPage';
                     }, 600);
                 },
                 error: function () {

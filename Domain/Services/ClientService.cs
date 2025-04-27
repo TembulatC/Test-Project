@@ -69,7 +69,7 @@ namespace Domain.Services
         {
             var client = await _clientRepository.FindClientForAuth(findData, data);
 
-            // Если такого пользователя нет, то создается новый(используется для регистрации пользователя)
+            // Если такого пользователя нет, то возвращаем ошибку
             if (client == null)
             {
                 return "ClientNotFound";
@@ -96,7 +96,23 @@ namespace Domain.Services
 
                 return validate;
             }
+        }
 
+        public async Task<string> FindClientForRegister(string findData, string data, string password)
+        {
+            var client = await _clientRepository.FindClientForAuth(findData, data);
+
+            // Если такого пользователя нет, то создается новый(используется для регистрации пользователя)
+            if (client == null)
+            {
+                return "ClientNotFound";
+            }
+
+            // Если пользовтаель есть
+            else
+            {
+                return "ClientFound";
+            }
         }
 
         public async Task<List<Client>> GetAll()
@@ -122,7 +138,5 @@ namespace Domain.Services
             string hashedPassword = _hasherRepository.Generate(password);
             await _clientRepository.UpdateClient(login, code, hashedPassword, discount);
         }
-
-        // Добавить метод поиска клиента без создания токена после исполнения
     }
 }

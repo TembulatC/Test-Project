@@ -5,6 +5,7 @@ using Domain.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Net;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace WebApplicationTest.Controllers
 {
@@ -30,17 +31,18 @@ namespace WebApplicationTest.Controllers
             if (ModelState.IsValid)
             {
                 // Проверка на наличие пользователя
-                var client = await _clientService.FindClientForAuth(request.registerMethod, request.email, request.password);
+                var client = await _clientService.FindClientForRegister(request.registerMethod, request.email, request.password);
 
-                if (client == "ClientNotFound") // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
+                if (client == "ClientFound") // Если пользователь существует - возвращаем 409 код ошибки в ajax на обработку
+                {
+                    return Conflict();
+                }
+                else // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
                 {
                     await _clientService.AddClientWithEmail(request.login, request.password, request.email);
                     return Json(request);
+                    
                 }
-                else // В другом случае возвращаем 409 код ошибки в ajax на обработку
-                {
-                    return Conflict();
-                }              
             }
             // Если есть пустое поле, то возвращаем 400 код ошибки в ajax
             else
@@ -58,17 +60,16 @@ namespace WebApplicationTest.Controllers
             if (ModelState.IsValid)
             {
                 // Проверка на наличие пользователя
-                var client = await _clientService.FindClientForAuth(request.registerMethod, request.phoneNumber, request.password);
+                var client = await _clientService.FindClientForRegister(request.registerMethod, request.phoneNumber, request.password);
 
-                if (client == "ClientNotFound") // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
-                {
-                    await _clientService.AddClientWithPhoneNumber(request.login, request.password, request.phoneNumber);
-                    await _smsService.SendSMSPhone(request.phoneNumber);
-                    return Json(request);
-                }
-                else // В другом случае возвращаем 409 код ошибки в ajax на обработку
+                if (client == "ClientFound") // Если пользователь существует - возвращаем 409 код ошибки в ajax на обработку
                 {
                     return Conflict();
+                }
+                else // Если пользователя не существует - регистриурем его и возвращаем данные в ajax
+                {
+                    await _clientService.AddClientWithPhoneNumber(request.login, request.password, request.phoneNumber);
+                    return Json(request);
                 }
             }
             // Если есть пустое поле, то возвращаем 400 код ошибки в ajax
@@ -150,11 +151,11 @@ namespace WebApplicationTest.Controllers
 
         [HttpPost]
         [Route("[controller]/[action]")]
-        public async Task ConfirmForNumber([FromBody] CodeForComparisonRequest request, CodeConfirmRequest codeConfirmRequest)
+        public async Task ConfirmForNumber([FromBody] CodeForComparisonRequest request)
         {
             if (ModelState.IsValid)
             {
-                Console.WriteLine($"{codeConfirmRequest.Code}");
+                Console.WriteLine($"");
             }
         }
     }
