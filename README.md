@@ -7,5 +7,5 @@
 },
 ```
 
-Вместо username, password, hostaname/adress, port и database вписываем данные вашей бд
+Вместо username, password, hostaname/adress, port и database вписываем данные вашей бд.
 Затем делаете миграцию из проекта в вашу бд
